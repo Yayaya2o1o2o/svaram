@@ -12,6 +12,14 @@ import { CORPUS, entryBySlug, readableFirst } from "@/data/corpus";
 import { CHANT_TYPES, CORPUS_LANGUAGES, DEITIES, OCCASIONS, TRADITIONS } from "@/data/taxonomy";
 import { SOURCES } from "@/data/sources";
 
+/** Entries that are collections of thousands of songs, not single compositions. */
+const COLLECTIONS = new Set([
+  "annamacharya-sankeertanas", "nalayira-divya-prabandham", "purandaradasa-devaranamas",
+  "kanakadasa-kirtanas", "tukaram-abhang", "dnyaneshwar-abhang", "namdev-abhang",
+  "mirabai-padavali", "surdas-sursagar", "kabir-bhajans", "narsinh-mehta-prabhatiya",
+  "swaminarayan-kirtans", "borgeet", "jagannath-bhajans", "sivananda-devotional-songs",
+]);
+
 export function generateStaticParams() {
   return CORPUS.map((c) => ({ slug: c.slug }));
 }
@@ -104,9 +112,11 @@ export default async function ChantPage({ params }: { params: Promise<{ slug: st
           <section className="card mt-6 border border-line-strong bg-canvas-raised p-5">
             <p className="text-sm leading-relaxed text-ink">{entry.note}</p>
             <p className="mt-4 border-t border-line pt-4 text-sm leading-relaxed text-ink-soft">
-              This entry is a whole corpus rather than a single composition
-              {entry.extent ? ` (${entry.extent})` : ""} — there is no one text to print. Its
-              provenance is below.
+              {COLLECTIONS.has(entry.slug)
+                ? `This entry is a whole corpus rather than a single composition${
+                    entry.extent ? ` (${entry.extent})` : ""
+                  } — thousands of separate songs, so there is no one text to print here.`
+                : "The text for this entry has not been pulled into the corpus yet. Its attribution is below and the words follow shortly."}
             </p>
           </section>
         )}
