@@ -7,7 +7,6 @@ import { ChantReader } from "@/components/ChantReader";
 import { ArchiveReader } from "@/components/ArchiveReader";
 import { fetchedTextFor } from "@/data/texts";
 import { SourceBlock } from "@/components/SourceBlock";
-import { SaveButton } from "@/components/SaveButton";
 import { EntryList } from "@/components/EntryRow";
 import { CORPUS, entryBySlug, readableFirst } from "@/data/corpus";
 import { CHANT_TYPES, CORPUS_LANGUAGES, DEITIES, OCCASIONS, TRADITIONS } from "@/data/taxonomy";
@@ -75,7 +74,6 @@ export default async function ChantPage({ params }: { params: Promise<{ slug: st
           </dl>
 
           <div className="mt-5 flex flex-wrap items-center gap-2">
-            <SaveButton slug={entry.slug} />
             {entry.occasions.slice(0, 4).map((o) => (
               <Link
                 key={o}

@@ -24,7 +24,6 @@ export function Footer() {
           </span>
           <span className="grid gap-2">
             <Link href="/sources" className="hover:text-saffron">Sources</Link>
-            <Link href="/account" className="hover:text-saffron">Account</Link>
           </span>
         </nav>
       </div>
