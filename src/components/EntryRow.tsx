@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CHANT_TYPES, CORPUS_LANGUAGES, DEITIES } from "@/data/taxonomy";
+import { FETCHED_TEXTS } from "@/data/texts";
 import type { CorpusEntry } from "@/data/types";
 
 /**
@@ -11,6 +12,7 @@ export function EntryRow({ entry }: { entry: CorpusEntry }) {
   const deity = DEITIES[entry.deity[0] ?? "general"];
   const type = CHANT_TYPES[entry.type];
   const language = CORPUS_LANGUAGES[entry.language];
+  const readable = entry.hasFullText || Boolean(FETCHED_TEXTS[entry.slug]);
 
   return (
     <Link
@@ -32,18 +34,17 @@ export function EntryRow({ entry }: { entry: CorpusEntry }) {
         <span className="mt-1.5 block text-xs text-ink-faint">
           {type.en} · {language.en}
           {entry.composer ? <> · {entry.composer}</> : null}
-          {entry.hasFullText ? null : <> · text at {entry.sources[0]?.sourceId === "ttd-annamacharya" ? "TTD" : "archive"}</>}
         </span>
       </span>
 
       <span className="col-start-2 flex items-center gap-2 sm:col-start-3 sm:justify-end">
-        {entry.hasFullText ? (
+        {readable ? (
           <span className="rounded-full border border-saffron/40 bg-saffron-soft px-2.5 py-0.5 text-[0.65rem] font-semibold tracking-wide text-maroon uppercase">
             Full text
           </span>
         ) : (
           <span className="rounded-full border border-line-strong px-2.5 py-0.5 text-[0.65rem] tracking-wide text-ink-faint uppercase">
-            Catalogued
+            Corpus entry
           </span>
         )}
         {entry.hasFullText ? (

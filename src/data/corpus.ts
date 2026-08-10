@@ -1,5 +1,6 @@
 import { CHANTS } from "./chants";
 import { CATALOG } from "./catalog";
+import { FETCHED_TEXTS } from "./texts";
 import type {
   Chant,
   CorpusEntry,
@@ -194,13 +195,21 @@ export function entriesForDeity(deity: Deity): CorpusEntry[] {
 }
 
 /** Full-text entries sort first — they are the ones you can actually read here. */
-export function readableFirst(entries: CorpusEntry[]): CorpusEntry[] {
-  return [...entries].sort((a, b) => Number(b.hasFullText) - Number(a.hasFullText));
+export function isReadable(entry: CorpusEntry): boolean {
+  return entry.hasFullText || Boolean(FETCHED_TEXTS[entry.slug]);
 }
+
+export function readableFirst(entries: CorpusEntry[]): CorpusEntry[] {
+  return [...entries].sort((a, b) => Number(isReadable(b)) - Number(isReadable(a)));
+}
+
+/** Entries whose words are actually on the page: ours plus the fetched archive texts. */
+export const READABLE_COUNT =
+  FULL_TEXT_CHANTS.length + CATALOG.filter((c) => FETCHED_TEXTS[c.slug]).length;
 
 export const CORPUS_STATS = {
   total: CORPUS.length,
-  withText: FULL_TEXT_CHANTS.length,
+  withText: READABLE_COUNT,
   catalogued: CATALOG.length,
   deities: new Set(CORPUS.flatMap((e) => e.deity)).size,
   languages: new Set(CORPUS.map((e) => e.language)).size,

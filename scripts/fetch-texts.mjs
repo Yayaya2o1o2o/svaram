@@ -123,7 +123,13 @@ function extractDevanagari(html) {
   // Drop the archive's own boilerplate and encoding credits.
   const junk =
     /(sanskritdocuments|proofread|encoded|transliterat|pdf|itrans|please|website|comments|last updated|शुद्धिपत्रम्)/i;
-  const cleaned = lines.filter((l) => !junk.test(l));
+  const cleaned = lines
+    .filter((l) => !junk.test(l))
+    // The archive interleaves editor's notes in Latin script ("or together ??
+    // ... as ..."). Strip the note, keep the verse.
+    .map((l) => l.replace(/\?\?/g, " ").replace(/\b(or together|as|variant|Note)\b/gi, " "))
+    .map((l) => l.replace(/[A-Za-z]{2,}/g, " ").replace(/\s{2,}/g, " ").trim())
+    .filter((l) => /[ऀ-ॿ]/.test(l) && l.length > 1);
 
   // Collapse repeated title lines at the head.
   const out = [];
