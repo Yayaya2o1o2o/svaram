@@ -33,26 +33,54 @@ export default async function Home({
 
       <main className="mx-auto max-w-6xl px-5 sm:px-8">
         {/* Masthead */}
-        <section className="border-b border-line py-12 sm:py-16">
-          <p className="font-hi text-sm tracking-[0.3em] text-saffron">
-            आरती · भजन · चालीसा · मंत्र · स्तोत्र
-          </p>
-          <h1 className="mt-4 max-w-4xl font-display text-4xl leading-[1.05] font-semibold tracking-tight sm:text-6xl">
-            Every chant, and the day
-            <br />
-            it belongs to.
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft">
-            A sourced reference for Hindu aartis, bhajans, chalisas, mantras and stotras — organized
-            by deity, by tradition, and by the Hindu calendar, so the page already knows what today
-            is when you open it.
-          </p>
+        <section className="grid gap-10 border-b border-line py-12 sm:py-16 lg:grid-cols-[1fr_20rem] lg:gap-14">
+          <div>
+            <p className="font-hi text-sm tracking-[0.3em] text-saffron">
+              आरती · भजन · चालीसा · मंत्र · स्तोत्र
+            </p>
+            <h1 className="mt-4 font-display text-4xl leading-[1.05] font-semibold tracking-tight sm:text-6xl">
+              Every chant, and the day
+              <br />
+              it belongs to.
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft">
+              A sourced reference for Hindu aartis, bhajans, chalisas, mantras and stotras —
+              organized by deity, by tradition, and by the Hindu calendar, so the page already knows
+              what today is when you open it.
+            </p>
 
-          <div className="mt-8 max-w-2xl">
-            <PillSearch />
+            <div className="mt-8 max-w-2xl">
+              <PillSearch />
+            </div>
           </div>
 
-          <dl className="mt-8 flex flex-wrap gap-x-10 gap-y-3">
+          {/* The painted-border column of the reference, rendered in rules rather than ornament. */}
+          <aside className="hidden self-start border-2 border-indigo lg:block">
+            <div className="border-b border-indigo/30 bg-indigo px-4 py-2">
+              <span className="text-[0.65rem] font-semibold tracking-[0.18em] text-canvas-raised uppercase">
+                Mangalacharan
+              </span>
+            </div>
+            <div className="px-5 py-6 text-center">
+              <p className="font-hi text-2xl leading-[1.9] text-ink">
+                ॐ सर्वे भवन्तु सुखिनः
+                <br />
+                सर्वे सन्तु निरामयाः
+              </p>
+              <p className="mt-4 border-t border-line pt-4 text-xs leading-relaxed text-ink-soft">
+                May all be well; may all be free of illness. The verse that closes worship, whichever
+                tradition it opened in.
+              </p>
+              <Link
+                href="/chant/sarve-bhavantu-sukhinah"
+                className="mt-4 inline-block text-xs text-saffron hover:underline"
+              >
+                Where it comes from →
+              </Link>
+            </div>
+          </aside>
+
+          <dl className="flex flex-wrap gap-x-10 gap-y-3 lg:col-span-2">
             {[
               { k: "Compositions", v: CORPUS_STATS.total },
               { k: "Readable in full", v: CORPUS_STATS.withText },
