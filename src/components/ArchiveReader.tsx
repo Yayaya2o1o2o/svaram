@@ -19,8 +19,9 @@ const SCRIPT_CLASS: Record<LanguageCode, string> = {
  * rather than five separately-typed versions that can drift apart.
  */
 export function ArchiveReader({ text }: { text: FetchedText }) {
-  const [language, setLanguage] = useState<LanguageCode>("hi");
-  const [scale, setScale] = useState(1);
+  // Roman first: most readers here can sound it out but cannot read Devanagari.
+  const [language, setLanguage] = useState<LanguageCode>("en");
+  const [scale, setScale] = useState(1.15);
 
   const render = (verse: string) => {
     if (language === "hi") return verse;
@@ -51,7 +52,7 @@ export function ArchiveReader({ text }: { text: FetchedText }) {
         <div className="ml-auto flex items-center gap-1">
           <button
             type="button"
-            onClick={() => setScale((s) => Math.max(0.8, Number((s - 0.15).toFixed(2))))}
+            onClick={() => setScale((s) => Math.max(0.85, Number((s - 0.15).toFixed(2))))}
             className="rounded-full border border-line px-3 py-1.5 text-xs hover:border-saffron hover:text-saffron"
             aria-label="Smaller text"
           >
@@ -59,7 +60,7 @@ export function ArchiveReader({ text }: { text: FetchedText }) {
           </button>
           <button
             type="button"
-            onClick={() => setScale((s) => Math.min(2, Number((s + 0.15).toFixed(2))))}
+            onClick={() => setScale((s) => Math.min(2.2, Number((s + 0.15).toFixed(2))))}
             className="rounded-full border border-line px-3 py-1.5 text-xs hover:border-saffron hover:text-saffron"
             aria-label="Larger text"
           >

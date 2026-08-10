@@ -14,8 +14,9 @@ const SCRIPT_CLASS: Record<LanguageCode, string> = {
 };
 
 export function ChantReader({ chant }: { chant: Chant }) {
-  const [language, setLanguage] = useState<LanguageCode>("hi");
-  const [scale, setScale] = useState(1);
+  // Roman first: most readers here can sound it out but cannot read Devanagari.
+  const [language, setLanguage] = useState<LanguageCode>("en");
+  const [scale, setScale] = useState(1.15);
 
   const lineFor = (index: number) => {
     const line = chant.lines[index];
@@ -48,7 +49,7 @@ export function ChantReader({ chant }: { chant: Chant }) {
           <span className="label mr-1 hidden sm:inline">Size</span>
           <button
             type="button"
-            onClick={() => setScale((s) => Math.max(0.8, Number((s - 0.15).toFixed(2))))}
+            onClick={() => setScale((s) => Math.max(0.85, Number((s - 0.15).toFixed(2))))}
             className="border border-line px-2.5 py-1.5 text-xs hover:border-saffron hover:text-saffron"
             aria-label="Smaller text"
           >
@@ -56,7 +57,7 @@ export function ChantReader({ chant }: { chant: Chant }) {
           </button>
           <button
             type="button"
-            onClick={() => setScale((s) => Math.min(2, Number((s + 0.15).toFixed(2))))}
+            onClick={() => setScale((s) => Math.min(2.2, Number((s + 0.15).toFixed(2))))}
             className="border border-line px-2.5 py-1.5 text-xs hover:border-saffron hover:text-saffron"
             aria-label="Larger text"
           >
