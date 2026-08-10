@@ -15,7 +15,7 @@ export function EntryRow({ entry }: { entry: CorpusEntry }) {
   return (
     <Link
       href={`/chant/${entry.slug}`}
-      className="group grid grid-cols-[2.75rem_1fr] items-baseline gap-x-4 gap-y-1 border-b border-line px-2 py-4 hover:bg-canvas-raised sm:grid-cols-[3.25rem_1fr_auto] sm:px-3"
+      className="group grid grid-cols-[2.75rem_1fr] items-baseline gap-x-4 gap-y-1 rounded-xl border-b border-line px-2 py-4 hover:bg-canvas-raised sm:grid-cols-[3.25rem_1fr_auto] sm:px-3"
     >
       <span
         aria-hidden
@@ -38,11 +38,11 @@ export function EntryRow({ entry }: { entry: CorpusEntry }) {
 
       <span className="col-start-2 flex items-center gap-2 sm:col-start-3 sm:justify-end">
         {entry.hasFullText ? (
-          <span className="border border-saffron/40 bg-saffron-soft px-2 py-0.5 text-[0.65rem] font-semibold tracking-wide text-maroon uppercase">
+          <span className="rounded-full border border-saffron/40 bg-saffron-soft px-2.5 py-0.5 text-[0.65rem] font-semibold tracking-wide text-maroon uppercase">
             Full text
           </span>
         ) : (
-          <span className="border border-line-strong px-2 py-0.5 text-[0.65rem] tracking-wide text-ink-faint uppercase">
+          <span className="rounded-full border border-line-strong px-2.5 py-0.5 text-[0.65rem] tracking-wide text-ink-faint uppercase">
             Catalogued
           </span>
         )}

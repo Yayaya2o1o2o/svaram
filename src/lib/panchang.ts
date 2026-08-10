@@ -228,7 +228,7 @@ export function getPanchang(date: Date = new Date(), city: CityKey = DEFAULT_CIT
     city,
     cityLabel: place.label,
     gregorian: new Intl.DateTimeFormat("en-US", {
-      timeZone: place.tz, weekday: "long", day: "numeric", month: "long", year: "numeric",
+      timeZone: place.tz, weekday: "long", day: "numeric", month: "long",
     }).format(date),
     weekday: { en: weekday.en, hi: weekday.hi },
     tithi: {

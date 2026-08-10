@@ -1,15 +1,13 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { PillSearch } from "@/components/PillSearch";
-import { TodayPanel } from "@/components/TodayPanel";
+import { Hero } from "@/components/Hero";
 import { CORPUS_STATS, readableFirst, CORPUS } from "@/data/corpus";
 import { CHANT_TYPES, DEITIES } from "@/data/taxonomy";
 import { SOURCE_LIST } from "@/data/sources";
-import { DEFAULT_CITY, type CityKey, CITIES } from "@/lib/panchang";
 import type { Deity } from "@/data/types";
 
-/** The panchang turns over daily, so the shell is revalidated rather than frozen. */
 export const revalidate = 900;
 
 const PRIMARY_DEITIES: Deity[] = [
@@ -17,14 +15,7 @@ const PRIMARY_DEITIES: Deity[] = [
   "durga", "lakshmi", "saraswati", "devi", "surya", "venkateshwara",
 ];
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{ city?: string }>;
-}) {
-  const { city } = await searchParams;
-  const activeCity: CityKey = city && city in CITIES ? (city as CityKey) : DEFAULT_CITY;
-
+export default function Home() {
   const readable = readableFirst(CORPUS).slice(0, 8);
 
   return (
@@ -32,55 +23,26 @@ export default async function Home({
       <Header />
 
       <main className="mx-auto max-w-6xl px-5 sm:px-8">
-        {/* Masthead */}
-        <section className="grid gap-10 border-b border-line py-12 sm:py-16 lg:grid-cols-[1fr_20rem] lg:gap-14">
-          <div>
-            <p className="font-hi text-sm tracking-[0.3em] text-saffron">
-              आरती · भजन · चालीसा · मंत्र · स्तोत्र
-            </p>
-            <h1 className="mt-4 font-display text-4xl leading-[1.05] font-semibold tracking-tight sm:text-6xl">
-              Every chant, and the day
-              <br />
-              it belongs to.
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-ink-soft">
-              A sourced reference for Hindu aartis, bhajans, chalisas, mantras and stotras —
-              organized by deity, by tradition, and by the Hindu calendar, so the page already knows
-              what today is when you open it.
-            </p>
+        {/* Landing: the search is the whole proposition, the painting carries the rest. */}
+        <section className="grid items-center gap-10 py-12 sm:py-16 lg:grid-cols-[1fr_22rem] lg:gap-16">
+          <Hero />
 
-            <div className="mt-8 max-w-2xl">
-              <PillSearch />
+          <div className="rise rise-2 order-first lg:order-none">
+            <div className="card overflow-hidden border-2 border-indigo shadow-[0_18px_50px_-24px_rgba(36,28,17,0.5)]">
+              <Image
+                src="/krishna-pichwai.jpg"
+                alt="Pichwai painting of Krishna with cows beside the Yamuna at sunset"
+                width={1200}
+                height={1800}
+                priority
+                className="h-auto w-full"
+              />
             </div>
           </div>
+        </section>
 
-          {/* The painted-border column of the reference, rendered in rules rather than ornament. */}
-          <aside className="hidden self-start border-2 border-indigo lg:block">
-            <div className="border-b border-indigo/30 bg-indigo px-4 py-2">
-              <span className="text-[0.65rem] font-semibold tracking-[0.18em] text-canvas-raised uppercase">
-                Mangalacharan
-              </span>
-            </div>
-            <div className="px-5 py-6 text-center">
-              <p className="font-hi text-2xl leading-[1.9] text-ink">
-                ॐ सर्वे भवन्तु सुखिनः
-                <br />
-                सर्वे सन्तु निरामयाः
-              </p>
-              <p className="mt-4 border-t border-line pt-4 text-xs leading-relaxed text-ink-soft">
-                May all be well; may all be free of illness. The verse that closes worship, whichever
-                tradition it opened in.
-              </p>
-              <Link
-                href="/chant/sarve-bhavantu-sukhinah"
-                className="mt-4 inline-block text-xs text-saffron hover:underline"
-              >
-                Where it comes from →
-              </Link>
-            </div>
-          </aside>
-
-          <dl className="flex flex-wrap gap-x-10 gap-y-3 lg:col-span-2">
+        <section className="border-t border-line py-8">
+          <dl className="flex flex-wrap gap-x-12 gap-y-4">
             {[
               { k: "Compositions", v: CORPUS_STATS.total },
               { k: "Readable in full", v: CORPUS_STATS.withText },
@@ -93,28 +55,15 @@ export default async function Home({
                 <dd className="font-display text-2xl font-semibold">{s.v}</dd>
               </div>
             ))}
+            <div className="ml-auto self-end">
+              <Link
+                href="/today"
+                className="inline-block rounded-full border border-line-strong px-4 py-2 text-sm hover:-translate-y-0.5 hover:border-saffron hover:text-saffron"
+              >
+                What today calls for →
+              </Link>
+            </div>
           </dl>
-        </section>
-
-        {/* Today */}
-        <section className="py-10 sm:py-14">
-          <TodayPanel city={activeCity} />
-          <form action="/" className="mt-3 flex items-center gap-2 text-xs text-ink-faint">
-            <label htmlFor="city">Panchang computed for</label>
-            <select
-              id="city"
-              name="city"
-              defaultValue={activeCity}
-              className="border border-line bg-canvas-raised px-2 py-1 text-xs"
-            >
-              {Object.entries(CITIES).map(([key, c]) => (
-                <option key={key} value={key}>{c.label}</option>
-              ))}
-            </select>
-            <button type="submit" className="border border-line-strong px-2 py-1 hover:border-saffron hover:text-saffron">
-              Set
-            </button>
-          </form>
         </section>
 
         {/* Deity index — letterforms, not icons */}
@@ -123,7 +72,7 @@ export default async function Home({
             <h2 className="font-display text-2xl font-semibold">By deity</h2>
             <Link href="/browse" className="text-sm text-saffron hover:underline">All categories →</Link>
           </div>
-          <div className="mt-6 grid grid-cols-2 gap-px bg-line sm:grid-cols-3 lg:grid-cols-4">
+          <div className="card mt-6 grid grid-cols-2 gap-px border border-line bg-line sm:grid-cols-3 lg:grid-cols-4">
             {PRIMARY_DEITIES.map((d) => {
               const meta = DEITIES[d];
               return (
@@ -152,15 +101,14 @@ export default async function Home({
           <h2 className="font-display text-2xl font-semibold">By form</h2>
           <p className="mt-2 max-w-2xl text-sm text-ink-soft">
             Aarti, bhajan, mantra and stotra are not synonyms — and neither are abhang, pasuram,
-            keertana and devaranama. Searching only for the word &ldquo;bhajan&rdquo; misses most of
-            the tradition.
+            keertana and devaranama.
           </p>
           <div className="mt-6 rule-strong">
             {Object.entries(CHANT_TYPES).map(([key, t]) => (
               <Link
                 key={key}
                 href={`/browse/type/${key}`}
-                className="group flex flex-wrap items-baseline gap-x-4 gap-y-1 border-b border-line px-2 py-3 hover:bg-canvas-raised sm:px-3"
+                className="group flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-lg border-b border-line px-2 py-3 hover:bg-canvas-raised sm:px-3"
               >
                 <span className="font-display w-40 text-base font-semibold group-hover:text-saffron">
                   {t.en}
@@ -183,7 +131,7 @@ export default async function Home({
               <Link
                 key={entry.slug}
                 href={`/chant/${entry.slug}`}
-                className="group flex items-baseline gap-4 border-b border-line px-2 py-3 hover:bg-canvas-raised sm:px-3"
+                className="group flex items-baseline gap-4 rounded-lg border-b border-line px-2 py-3 hover:bg-canvas-raised sm:px-3"
               >
                 <span aria-hidden className="font-hi w-7 text-lg text-line-strong group-hover:text-saffron">
                   {DEITIES[entry.deity[0] ?? "general"].mark}
@@ -202,10 +150,9 @@ export default async function Home({
           <h2 className="font-display text-2xl font-semibold">Where the texts come from</h2>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-soft">
             Every entry names the archive that holds it — Gita Press, Sanskrit Documents, the TTD
-            projects, IGNCA and the sampradaya's own publisher. Nothing here is seeded from lyrics
-            aggregators, where a Mirabai pada picks up a modern singer&apos;s name within two hops.
+            projects, IGNCA and the sampradaya&apos;s own publisher.
           </p>
-          <ul className="mt-6 grid gap-px bg-line sm:grid-cols-2">
+          <ul className="card mt-6 grid gap-px border border-line bg-line sm:grid-cols-2">
             {SOURCE_LIST.slice(0, 8).map((s) => (
               <li key={s.id} className="bg-canvas px-4 py-4">
                 <div className="font-display text-sm font-semibold">{s.org}</div>

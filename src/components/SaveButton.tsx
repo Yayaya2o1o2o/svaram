@@ -42,7 +42,7 @@ export function SaveButton({ slug }: { slug: string }) {
 
   if (state === "anon") {
     return (
-      <Link href="/login" className="border border-line px-3 py-1.5 text-xs text-ink-soft hover:border-saffron hover:text-saffron">
+      <Link href="/login" className="rounded-full border border-line px-4 py-1.5 text-xs text-ink-soft hover:border-saffron hover:text-saffron">
         Sign in to save
       </Link>
     );
@@ -68,7 +68,7 @@ export function SaveButton({ slug }: { slug: string }) {
     <button
       type="button"
       onClick={toggle}
-      className={`border px-3 py-1.5 text-xs ${
+      className={`rounded-full border px-4 py-1.5 text-xs ${
         state === "saved"
           ? "border-saffron bg-saffron-soft font-semibold text-maroon"
           : "border-line text-ink-soft hover:border-saffron hover:text-saffron"

@@ -31,7 +31,7 @@ export async function Header() {
           {authEnabled ? (
             <Link
               href="/account"
-              className="border border-line-strong px-3 py-1.5 text-xs hover:border-saffron hover:text-saffron"
+              className="rounded-full border border-line-strong px-4 py-1.5 text-xs hover:border-saffron hover:text-saffron"
             >
               {email ? "My shelf" : "Sign in"}
             </Link>

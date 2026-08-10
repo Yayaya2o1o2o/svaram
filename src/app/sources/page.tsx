@@ -44,7 +44,7 @@ export default function SourcesPage() {
             <article key={source.id} className="border-b border-line py-6">
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <h2 className="font-display text-xl font-semibold">{source.org}</h2>
-                <span className="border border-line px-1.5 py-0.5 text-[0.65rem] tracking-wide text-ink-faint uppercase">
+                <span className="rounded-full border border-line px-2 py-0.5 text-[0.65rem] tracking-wide text-ink-faint uppercase">
                   {source.quality}
                 </span>
                 <span className="ml-auto text-xs text-ink-faint">
@@ -68,7 +68,7 @@ export default function SourcesPage() {
           ))}
         </div>
 
-        <section className="mt-10 border border-line-strong bg-canvas-raised p-5">
+        <section className="card mt-10 border border-line-strong bg-canvas-raised p-5">
           <h2 className="font-display text-lg font-semibold">What is deliberately not used</h2>
           <p className="mt-2 text-sm leading-relaxed text-ink-soft">
             Lyrics farms, blog aggregations, video and playlist metadata, and AI-generated song

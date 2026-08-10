@@ -4,6 +4,8 @@ import type { Metadata } from "next";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { ChantReader } from "@/components/ChantReader";
+import { ArchiveReader } from "@/components/ArchiveReader";
+import { fetchedTextFor } from "@/data/texts";
 import { SourceBlock } from "@/components/SourceBlock";
 import { SaveButton } from "@/components/SaveButton";
 import { EntryList } from "@/components/EntryRow";
@@ -33,6 +35,8 @@ export default async function ChantPage({ params }: { params: Promise<{ slug: st
   const { slug } = await params;
   const entry = entryBySlug(slug);
   if (!entry) notFound();
+
+  const archiveText = entry.hasFullText ? undefined : fetchedTextFor(entry.slug);
 
   const related = readableFirst(
     CORPUS.filter(
@@ -76,7 +80,7 @@ export default async function ChantPage({ params }: { params: Promise<{ slug: st
               <Link
                 key={o}
                 href={`/browse/occasion/${o}`}
-                className="border border-line px-2.5 py-1.5 text-xs text-ink-soft hover:border-saffron hover:text-saffron"
+                className="rounded-full border border-line px-3 py-1.5 text-xs text-ink-soft hover:border-saffron hover:text-saffron"
               >
                 {OCCASIONS[o].en}
               </Link>
@@ -89,23 +93,23 @@ export default async function ChantPage({ params }: { params: Promise<{ slug: st
             <p className="mt-6 text-sm leading-relaxed text-ink-soft">{entry.meaningEn}</p>
             <ChantReader chant={entry} />
           </>
+        ) : archiveText ? (
+          <>
+            <p className="mt-6 text-sm leading-relaxed text-ink-soft">{entry.note}</p>
+            <p className="mt-3 text-xs text-ink-faint">
+              Text as published by {SOURCES[entry.sources[0]?.sourceId ?? ""]?.org ?? "the archive"},
+              rendered here in five scripts from the one Devanagari original.
+            </p>
+            <ArchiveReader text={archiveText} />
+          </>
         ) : (
-          <section className="mt-6 border border-line-strong bg-canvas-raised p-5">
+          <section className="card mt-6 border border-line-strong bg-canvas-raised p-5">
             <p className="text-sm leading-relaxed text-ink">{entry.note}</p>
             <p className="mt-4 border-t border-line pt-4 text-sm leading-relaxed text-ink-soft">
-              The full text is not reproduced here. For a Sahasranama, a Rudram or a saint&apos;s
-              padavali, a version typed from memory drifts line by line, and a drifted text is worse
-              than none — so this entry sends you to the archive that actually holds it, listed
-              below with what it covers.
+              This entry is a whole corpus rather than a single composition
+              {entry.extent ? ` (${entry.extent})` : ""} — there is no one text to print. Its
+              provenance is below.
             </p>
-            <a
-              href={entry.sources[0]?.url ?? SOURCES[entry.sources[0]?.sourceId ?? ""]?.url ?? "#"}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="mt-4 inline-block border border-saffron bg-saffron px-4 py-2 text-sm font-semibold text-canvas-raised hover:bg-maroon hover:border-maroon"
-            >
-              Read it at {SOURCES[entry.sources[0]?.sourceId ?? ""]?.org ?? "the archive"} →
-            </a>
           </section>
         )}
 

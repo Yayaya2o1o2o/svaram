@@ -40,7 +40,7 @@ export function TodayPanel({ city, now = new Date() }: { city: CityKey; now?: Da
   const picks = selectForToday([...panchang.occasions, ...segment.occasions], deities, 6);
 
   return (
-    <section className="border border-line-strong bg-canvas-raised">
+    <section className="card border border-line-strong bg-canvas-raised shadow-[0_14px_40px_-30px_rgba(36,28,17,0.6)]">
       {/* Masthead: the panchang read as a dateline, not a widget. */}
       <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 border-b border-line px-5 py-3 sm:px-7">
         <span className="label">Today · {panchang.cityLabel}</span>
@@ -75,7 +75,7 @@ export function TodayPanel({ city, now = new Date() }: { city: CityKey; now?: Da
             {panchang.observances.slice(0, 5).map((o) => (
               <li
                 key={o.id}
-                className="border border-line px-2.5 py-1 text-xs text-ink-soft"
+                className="rounded-full border border-line px-3 py-1 text-xs text-ink-soft"
                 title={o.note}
               >
                 {o.name}

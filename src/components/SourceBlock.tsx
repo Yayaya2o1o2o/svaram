@@ -4,7 +4,7 @@ import type { CorpusEntry } from "@/data/types";
 /** Provenance, printed rather than hidden behind a tooltip. */
 export function SourceBlock({ entry }: { entry: CorpusEntry }) {
   return (
-    <section className="border border-line-strong bg-canvas-raised">
+    <section className="card border border-line-strong bg-canvas-raised">
       <h2 className="label border-b border-line px-4 py-2">Provenance</h2>
       <dl className="grid gap-px bg-line sm:grid-cols-2">
         {entry.composer ? (
@@ -24,7 +24,7 @@ export function SourceBlock({ entry }: { entry: CorpusEntry }) {
               <div className="flex flex-wrap items-baseline gap-x-2">
                 <span className="font-display text-sm font-semibold">{source.org}</span>
                 <span className="text-xs text-ink-faint">{source.name}</span>
-                <span className="ml-auto border border-line px-1.5 py-0.5 text-[0.65rem] tracking-wide text-ink-faint uppercase">
+                <span className="ml-auto rounded-full border border-line px-2 py-0.5 text-[0.65rem] tracking-wide text-ink-faint uppercase">
                   {source.quality}
                 </span>
               </div>
