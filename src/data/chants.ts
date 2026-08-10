@@ -1,5 +1,8 @@
 import type { Chant } from "./types";
 
+/** chants.ts holds text only; tradition/language/sources are attached in corpus.ts. */
+export type RawChant = Omit<Chant, "tradition" | "language" | "sources">;
+
 /**
  * Each `lines` entry is one stanza/verse. `hi` and `en` may contain internal
  * "\n" line breaks for multi-line verses — the UI renders these as a single
@@ -11,7 +14,7 @@ import type { Chant } from "./types";
  * each `source` field for what was actually verifiable). Tamil / Telugu /
  * Kannada renderings are generated from `hi` at runtime, not hand-typed.
  */
-export const CHANTS: Chant[] = [
+export const CHANTS: RawChant[] = [
   {
     slug: "om-jai-jagdish-hare",
     title: { hi: "ॐ जय जगदीश हरे", en: "Om Jai Jagdish Hare" },

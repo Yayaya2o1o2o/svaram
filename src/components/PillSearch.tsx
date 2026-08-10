@@ -1,116 +1,49 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { searchChants } from "@/lib/search";
-import { DEITIES, CHANT_TYPES } from "@/data/taxonomy";
+import { useState } from "react";
 
-export function PillSearch({ autoFocus = false }: { autoFocus?: boolean }) {
-  const [query, setQuery] = useState("");
-  const [focused, setFocused] = useState(false);
+const SUGGESTIONS = ["Hanuman Chalisa", "evening aarti", "Ekadashi", "Annamacharya", "Tulsidas", "Durga"];
+
+export function PillSearch({ initial = "" }: { initial?: string }) {
   const router = useRouter();
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const results = useMemo(() => (query.trim() ? searchChants(query).slice(0, 6) : []), [query]);
-
-  useEffect(() => {
-    function onClickOutside(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setFocused(false);
-      }
-    }
-    document.addEventListener("mousedown", onClickOutside);
-    return () => document.removeEventListener("mousedown", onClickOutside);
-  }, []);
-
-  function goToSearch() {
-    router.push(`/search?q=${encodeURIComponent(query.trim())}`);
-  }
+  const [value, setValue] = useState(initial);
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-xl mx-auto">
-      <motion.form
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+    <div>
+      <form
         onSubmit={(e) => {
           e.preventDefault();
-          goToSearch();
+          router.push(`/search?q=${encodeURIComponent(value.trim())}`);
         }}
-        className="relative flex items-center rounded-full border shadow-[0_8px_30px_rgba(0,0,0,0.08)] transition-shadow focus-within:shadow-[0_8px_40px_rgba(226,130,58,0.25)]"
-        style={{ background: "var(--canvas-raised)", borderColor: "var(--line)" }}
+        className="flex items-stretch border border-line-strong bg-canvas-raised"
       >
-        <svg
-          className="ml-5 h-5 w-5 shrink-0 opacity-50"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          aria-hidden
-        >
-          <circle cx="11" cy="11" r="7" />
-          <path d="m21 21-4.3-4.3" />
-        </svg>
         <input
-          autoFocus={autoFocus}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setFocused(true)}
-          placeholder="Search an aarti, bhajan, god or occasion…"
-          className="w-full bg-transparent px-4 py-4 text-base outline-none placeholder:opacity-50 sm:py-5 sm:text-lg"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="Search an aarti, deity, saint-poet or occasion"
+          aria-label="Search the corpus"
+          className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm outline-none placeholder:text-ink-faint"
         />
         <button
           type="submit"
-          className="mr-2 shrink-0 rounded-full px-5 py-3 text-sm font-medium text-white transition-transform active:scale-95 sm:mr-3 sm:px-6"
-          style={{ background: "var(--maroon)" }}
+          className="border-l border-line-strong bg-saffron px-5 text-sm font-semibold text-canvas-raised hover:bg-maroon"
         >
           Find
         </button>
-      </motion.form>
-
-      <AnimatePresence>
-        {focused && query.trim() && (
-          <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.98 }}
-            transition={{ duration: 0.18 }}
-            className="absolute left-0 right-0 top-full z-20 mt-3 overflow-hidden rounded-3xl border shadow-xl"
-            style={{ background: "var(--canvas-raised)", borderColor: "var(--line)" }}
+      </form>
+      <div className="mt-3 flex flex-wrap gap-2 text-xs">
+        {SUGGESTIONS.map((s) => (
+          <button
+            key={s}
+            type="button"
+            onClick={() => router.push(`/search?q=${encodeURIComponent(s)}`)}
+            className="border border-line px-2.5 py-1 text-ink-soft hover:border-saffron hover:text-saffron"
           >
-            {results.length === 0 ? (
-              <p className="p-5 text-sm opacity-60">No matches yet — try a deity, occasion, or word from the chant.</p>
-            ) : (
-              <ul>
-                {results.map((c) => (
-                  <li key={c.slug}>
-                    <a
-                      href={`/chant/${c.slug}`}
-                      className="flex items-center justify-between gap-3 px-5 py-3 transition-colors hover:bg-[var(--saffron-soft)]"
-                    >
-                      <span>
-                        <span className="block font-medium">{c.title.en}</span>
-                        <span className="font-hi block text-sm opacity-60">{c.title.hi}</span>
-                      </span>
-                      <span className="shrink-0 text-xs opacity-50">
-                        {c.deity[0] ? DEITIES[c.deity[0]].emoji : ""} {CHANT_TYPES[c.type].en}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <button
-              onClick={goToSearch}
-              className="block w-full border-t px-5 py-3 text-left text-sm font-medium"
-              style={{ borderColor: "var(--line)", color: "var(--maroon)" }}
-            >
-              See all results for &ldquo;{query}&rdquo; →
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {s}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

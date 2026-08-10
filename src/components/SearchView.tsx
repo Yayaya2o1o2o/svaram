@@ -1,137 +1,101 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { searchChants } from "@/lib/search";
-import { ChantCard } from "@/components/ChantCard";
-import { DEITIES, CHANT_TYPES, OCCASIONS } from "@/data/taxonomy";
-import { CHANTS } from "@/data/chants";
-import type { Deity, ChantType, Occasion } from "@/data/types";
+import { useSearchParams } from "next/navigation";
+import { EntryList } from "@/components/EntryRow";
+import { searchCorpus } from "@/lib/search";
+import { CHANT_TYPES, CORPUS_LANGUAGES, DEITIES, TRADITIONS } from "@/data/taxonomy";
+import type { ChantType, CorpusLanguage, Deity, Tradition } from "@/data/types";
 
-function useAvailable<T extends string>(pick: (c: (typeof CHANTS)[number]) => T[]) {
-  const set = new Set<T>();
-  for (const c of CHANTS) for (const v of pick(c)) set.add(v);
-  return set;
-}
+type Facet = "all" | "text";
 
 export function SearchView() {
   const params = useSearchParams();
-  const router = useRouter();
   const [query, setQuery] = useState(params.get("q") ?? "");
-  const [deity, setDeity] = useState<Deity | null>(null);
-  const [type, setType] = useState<ChantType | null>(null);
-  const [occasion, setOccasion] = useState<Occasion | null>(null);
-
-  const availableDeities = useAvailable((c) => c.deity);
-  const availableTypes = useAvailable((c) => [c.type]);
-  const availableOccasions = useAvailable((c) => c.occasions);
+  const [deity, setDeity] = useState<Deity | "">("");
+  const [type, setType] = useState<ChantType | "">("");
+  const [tradition, setTradition] = useState<Tradition | "">("");
+  const [language, setLanguage] = useState<CorpusLanguage | "">("");
+  const [facet, setFacet] = useState<Facet>("all");
 
   const results = useMemo(() => {
-    let r = searchChants(query);
-    if (deity) r = r.filter((c) => c.deity.includes(deity));
-    if (type) r = r.filter((c) => c.type === type);
-    if (occasion) r = r.filter((c) => c.occasions.includes(occasion));
-    return r;
-  }, [query, deity, type, occasion]);
+    let out = searchCorpus(query);
+    if (deity) out = out.filter((e) => e.deity.includes(deity));
+    if (type) out = out.filter((e) => e.type === type);
+    if (tradition) out = out.filter((e) => e.tradition.includes(tradition));
+    if (language) out = out.filter((e) => e.language === language);
+    if (facet === "text") out = out.filter((e) => e.hasFullText);
+    return out;
+  }, [query, deity, type, tradition, language, facet]);
 
-  function updateQuery(v: string) {
-    setQuery(v);
-    router.replace(`/search?q=${encodeURIComponent(v)}`, { scroll: false });
-  }
+  const selectClass =
+    "border border-line bg-canvas-raised px-2.5 py-2 text-xs text-ink-soft outline-none hover:border-line-strong";
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10">
-      <div className="mx-auto max-w-xl">
-        <div
-          className="flex items-center rounded-full border px-5 py-3.5 shadow-sm"
-          style={{ background: "var(--canvas-raised)", borderColor: "var(--line)" }}
-        >
-          <svg className="mr-3 h-5 w-5 shrink-0 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <circle cx="11" cy="11" r="7" />
-            <path d="m21 21-4.3-4.3" />
-          </svg>
-          <input
-            autoFocus
-            value={query}
-            onChange={(e) => updateQuery(e.target.value)}
-            placeholder="Search an aarti, bhajan, god or occasion…"
-            className="w-full bg-transparent outline-none placeholder:opacity-50"
-          />
+    <div>
+      <div className="flex items-stretch border border-line-strong bg-canvas-raised">
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search by title, deity, saint-poet, occasion or archive"
+          aria-label="Search the corpus"
+          autoFocus
+          className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm outline-none placeholder:text-ink-faint"
+        />
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <select value={deity} onChange={(e) => setDeity(e.target.value as Deity | "")} className={selectClass} aria-label="Filter by deity">
+          <option value="">All deities</option>
+          {Object.entries(DEITIES).map(([k, v]) => (
+            <option key={k} value={k}>{v.en}</option>
+          ))}
+        </select>
+
+        <select value={type} onChange={(e) => setType(e.target.value as ChantType | "")} className={selectClass} aria-label="Filter by form">
+          <option value="">All forms</option>
+          {Object.entries(CHANT_TYPES).map(([k, v]) => (
+            <option key={k} value={k}>{v.en}</option>
+          ))}
+        </select>
+
+        <select value={tradition} onChange={(e) => setTradition(e.target.value as Tradition | "")} className={selectClass} aria-label="Filter by tradition">
+          <option value="">All traditions</option>
+          {Object.entries(TRADITIONS).map(([k, v]) => (
+            <option key={k} value={k}>{v.en}</option>
+          ))}
+        </select>
+
+        <select value={language} onChange={(e) => setLanguage(e.target.value as CorpusLanguage | "")} className={selectClass} aria-label="Filter by language">
+          <option value="">All languages</option>
+          {Object.entries(CORPUS_LANGUAGES).map(([k, v]) => (
+            <option key={k} value={k}>{v.en}</option>
+          ))}
+        </select>
+
+        <div className="flex border border-line">
+          {(["all", "text"] as Facet[]).map((f) => (
+            <button
+              key={f}
+              type="button"
+              onClick={() => setFacet(f)}
+              className={`px-3 py-2 text-xs ${
+                facet === f ? "bg-saffron-soft text-maroon" : "text-ink-soft hover:text-saffron"
+              }`}
+            >
+              {f === "all" ? "Everything" : "Full text only"}
+            </button>
+          ))}
         </div>
       </div>
 
-      <div className="mt-6 flex flex-wrap justify-center gap-2 text-sm">
-        <FilterGroup label="Deity">
-          {[...availableDeities].map((d) => (
-            <Chip key={d} active={deity === d} onClick={() => setDeity(deity === d ? null : d)}>
-              {DEITIES[d].emoji} {DEITIES[d].en}
-            </Chip>
-          ))}
-        </FilterGroup>
-        <FilterGroup label="Type">
-          {[...availableTypes].map((t) => (
-            <Chip key={t} active={type === t} onClick={() => setType(type === t ? null : t)}>
-              {CHANT_TYPES[t].en}
-            </Chip>
-          ))}
-        </FilterGroup>
-        <FilterGroup label="Occasion">
-          {[...availableOccasions].map((o) => (
-            <Chip key={o} active={occasion === o} onClick={() => setOccasion(occasion === o ? null : o)}>
-              {OCCASIONS[o].en}
-            </Chip>
-          ))}
-        </FilterGroup>
+      <p className="mt-5 label">
+        {results.length} {results.length === 1 ? "entry" : "entries"}
+      </p>
+
+      <div className="mt-3">
+        <EntryList entries={results} />
       </div>
-
-      <motion.div
-        key={results.length + query + (deity ?? "") + (type ?? "") + (occasion ?? "")}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.25 }}
-        className="mt-10"
-      >
-        <p className="mb-4 text-sm opacity-60">
-          {results.length} {results.length === 1 ? "result" : "results"}
-        </p>
-        {results.length === 0 ? (
-          <p className="rounded-2xl border p-8 text-center opacity-60" style={{ borderColor: "var(--line)" }}>
-            Nothing matched. Try a different word, or clear filters above.
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {results.map((c, i) => (
-              <ChantCard key={c.slug} chant={c} index={i} />
-            ))}
-          </div>
-        )}
-      </motion.div>
     </div>
-  );
-}
-
-function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-wrap items-center gap-1.5 rounded-2xl border px-2.5 py-1.5" style={{ borderColor: "var(--line)" }}>
-      <span className="px-1 text-xs font-medium uppercase tracking-wide opacity-50">{label}</span>
-      {children}
-    </div>
-  );
-}
-
-function Chip({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      onClick={onClick}
-      className="rounded-full px-2.5 py-1 text-xs transition-colors sm:text-sm"
-      style={
-        active
-          ? { background: "var(--maroon)", color: "white" }
-          : { background: "var(--saffron-soft)", color: "var(--ink)" }
-      }
-    >
-      {children}
-    </button>
   );
 }

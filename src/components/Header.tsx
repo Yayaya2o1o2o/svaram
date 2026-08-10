@@ -1,20 +1,41 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { authEnabled } from "@/lib/supabase/client";
 
-export function Header() {
+export async function Header() {
+  let email: string | null = null;
+
+  if (authEnabled) {
+    try {
+      const supabase = await createClient();
+      const { data } = await supabase.auth.getUser();
+      email = data.user?.email ?? null;
+    } catch {
+      email = null;
+    }
+  }
+
   return (
-    <header className="sticky top-0 z-30 border-b backdrop-blur-md" style={{ borderColor: "var(--line)", background: "color-mix(in srgb, var(--canvas) 85%, transparent)" }}>
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        <Link href="/" className="flex items-center gap-2 font-display text-xl font-semibold tracking-tight">
-          <span aria-hidden>🕉️</span>
-          Svaram
+    <header className="rule-strong border-t-0 border-b border-line bg-canvas-raised">
+      <div className="mx-auto flex max-w-6xl items-baseline gap-6 px-5 py-4 sm:px-8">
+        <Link href="/" className="flex items-baseline gap-2">
+          <span className="font-hi text-xl leading-none text-saffron">ॐ</span>
+          <span className="font-display text-lg font-semibold tracking-tight">Svaram</span>
         </Link>
-        <nav className="flex items-center gap-4 text-sm sm:gap-6">
-          <Link href="/browse" className="opacity-70 transition-opacity hover:opacity-100">
-            Browse
-          </Link>
-          <Link href="/search" className="rounded-full px-4 py-2 font-medium text-white" style={{ background: "var(--maroon)" }}>
-            Search
-          </Link>
+
+        <nav className="ml-auto flex items-center gap-5 text-sm">
+          <Link href="/today" className="hover:text-saffron">Today</Link>
+          <Link href="/browse" className="hover:text-saffron">Browse</Link>
+          <Link href="/sources" className="hidden hover:text-saffron sm:inline">Sources</Link>
+          <Link href="/search" className="hover:text-saffron">Search</Link>
+          {authEnabled ? (
+            <Link
+              href="/account"
+              className="border border-line-strong px-3 py-1.5 text-xs hover:border-saffron hover:text-saffron"
+            >
+              {email ? "My shelf" : "Sign in"}
+            </Link>
+          ) : null}
         </nav>
       </div>
     </header>

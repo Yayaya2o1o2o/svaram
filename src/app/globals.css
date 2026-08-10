@@ -3,15 +3,21 @@
 @theme inline {
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
   --color-canvas: var(--canvas);
   --color-canvas-raised: var(--canvas-raised);
+  --color-canvas-sunk: var(--canvas-sunk);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-indigo: var(--indigo);
+  --color-indigo-soft: var(--indigo-soft);
+  --color-leaf: var(--leaf);
   --color-saffron: var(--saffron);
   --color-saffron-soft: var(--saffron-soft);
   --color-maroon: var(--maroon);
   --color-gold: var(--gold);
 
-  --font-display: var(--font-fraunces);
+  --font-display: var(--font-display-serif);
   --font-sans: var(--font-manrope);
   --font-hi: var(--font-noto-devanagari);
   --font-ta: var(--font-noto-tamil);
@@ -19,43 +25,56 @@
   --font-kn: var(--font-noto-kannada);
 }
 
+/**
+ * One palette, deliberately. Sandalwood paper, iron-gall ink, kumkum red and
+ * turmeric — the colours of the puja tray rather than of a software product.
+ * No dark variant: a page meant to be read at the shrine in the morning should
+ * not invert itself based on a system setting.
+ */
 :root {
-  --ink: #2a1c16;
-  --ink-soft: #6b5749;
-  --canvas: #fbf5ea;
-  --canvas-raised: #ffffff;
-  --line: #e8dcc7;
-  --saffron: #e2823a;
-  --saffron-soft: #f6e2c8;
-  --maroon: #7a2036;
-  --gold: #b8872b;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ink: #f3e9db;
-    --ink-soft: #c8b8a4;
-    --canvas: #17110f;
-    --canvas-raised: #221a16;
-    --line: #3a2c22;
-    --saffron: #f0a35e;
-    --saffron-soft: #3a2818;
-    --maroon: #e88ba0;
-    --gold: #e0b95c;
-  }
+  color-scheme: light;
+  /* Taken from the Pichwai reference: aged cream paper, indigo border,
+     marigold, lotus red and leaf green. Contrast checked against the paper —
+     the faintest text tone here still clears 4.5:1. */
+  --ink: #241c11;          /* 13.9:1 on canvas */
+  --ink-soft: #57452f;     /* 7.4:1  */
+  --ink-faint: #6f5a3f;    /* 5.1:1 — the floor for any text tone */
+  --canvas: #faf3e4;
+  --canvas-raised: #fffdf6;
+  --canvas-sunk: #f2e7d0;
+  --line: #ddcdab;
+  --line-strong: #b99f72;
+  --saffron: #b4520c;      /* marigold, darkened to 5.6:1 for text */
+  --saffron-soft: #f7e5c6;
+  --maroon: #8a2118;       /* lotus red */
+  --gold: #8a6714;
+  --indigo: #1f3a63;       /* the border blue of the painting */
+  --indigo-soft: #dfe5ef;
+  --leaf: #3f5c34;
 }
 
 * {
   border-color: var(--line);
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   background: var(--canvas);
   color: var(--ink);
+  /* A faint laid-paper tone, no gradients and nothing that moves. */
+  background-image: radial-gradient(circle at 12% 0%, rgba(180, 82, 12, 0.045), transparent 45%);
+  background-attachment: fixed;
+}
+
+/* Motion is off by design. Devotional text should sit still on the page. */
+*,
+*::before,
+*::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+html {
+  scroll-behavior: auto;
 }
 
 ::selection {
@@ -63,31 +82,29 @@ body {
   color: var(--maroon);
 }
 
-.diya-glow {
-  background: radial-gradient(circle, color-mix(in srgb, var(--saffron) 35%, transparent) 0%, transparent 70%);
+.font-hi { font-family: var(--font-hi), serif; }
+.font-ta { font-family: var(--font-ta), serif; }
+.font-te { font-family: var(--font-te), serif; }
+.font-kn { font-family: var(--font-kn), serif; }
+
+/* Small caps label used throughout for section and field names. */
+.label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 600;
 }
 
-.om-watermark {
-  font-family: var(--font-hi);
-}
+/* The rule that separates index rows; heavier at a section head. */
+.rule { border-top: 1px solid var(--line); }
+.rule-strong { border-top: 1px solid var(--line-strong); }
 
-@keyframes flicker {
-  0%, 100% { opacity: 1; transform: scaleY(1); }
-  45% { opacity: 0.85; transform: scaleY(0.96); }
-  55% { opacity: 0.95; transform: scaleY(1.03); }
-}
-
-.animate-flicker {
-  animation: flicker 2.4s ease-in-out infinite;
-  transform-origin: bottom center;
-}
-
-@keyframes drift {
-  0% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-14px) rotate(3deg); }
-  100% { transform: translateY(0) rotate(0deg); }
-}
-
-.animate-drift {
-  animation: drift 7s ease-in-out infinite;
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--saffron);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
